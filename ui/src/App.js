@@ -1,29 +1,67 @@
-import logo from './logo.svg';
-import './App.css';
-
-function calculate(){
-  // Get calculation from the backend
-  // Update results area
-}
+import "./App.css";
+import config from "./config.json";
+import { useState } from "react";
 
 function App() {
+  const [localSalesCount, setLocalSalesCount] = useState("");
+  const [foreignSalesCount, setForeignSalesCount] = useState("");
+  const [averageSaleAmount, setAverageSaleAmount] = useState("");
 
-  const totalFcamaraCommission = 50;
-  const totalCompetitorCommission = 10;
+  const [totalFcamaraCommission, setTotalFcamaraCommission] = useState(50);
+  const [totalCompetitorCommission, setTotalCompetitorCommission] = useState(10);
+
+
+  function calculate() {
+    console.log(JSON.stringify({
+      localSaleCount: localSalesCount,
+      foreignSaleCount: foreignSalesCount,
+      avgSaleAmt: averageSaleAmount,
+    }))
+    fetch(config.apiUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        localSaleCount: localSalesCount,
+        foreignSaleCount: foreignSalesCount,
+        avgSaleAmt: averageSaleAmount,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {setTotalFcamaraCommission(res.fcamaraCommission);
+      setTotalCompetitorCommission(res.competitorCommission)});
+
+  }
   return (
     <div className="App">
       <header className="App-header">
-        <div>
-        </div>
-        <form action={calculate}>
-          <label for="localSalesCount">Local Sales Count</label>  
-          <input name="localSalesCount" /><br />
+        <div></div>
+        <form onSubmit={calculate}>
+          <label htmlFor="localSalesCount">Local Sales Count</label>
+          <input
+            type="number"
+            id="localSalesCount"
+            value={localSalesCount}
+            onChange={(e) => setLocalSalesCount(e.target.value)}
+          /><br />
 
-          <label for="foreignSalesCount">Foreign Sales Count</label>  
-          <input name="foreignSalesCount" /><br />
-          
-          <label for="averageSaleAmount">Average Sale Amount</label>  
-          <input name="averageSaleAmount" /><br />
+          <label htmlFor="foreignSalesCount">Foreign Sales Count</label>
+          <input
+            type="number"
+            id="foreignSalesCount"
+            value={foreignSalesCount}
+            onChange={(e) => setForeignSalesCount(e.target.value)}
+          /><br />
+
+          <label htmlFor="averageSaleAmount">Average Sale Amount</label>
+          <input
+            type="number"
+            id="averageSaleAmount"
+            value={averageSaleAmount}
+            onChange={(e) => setAverageSaleAmount(e.target.value)}
+          /><br />
 
           <button type="submit">Calculate</button>
         </form>
